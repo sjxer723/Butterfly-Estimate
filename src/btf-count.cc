@@ -293,7 +293,7 @@ void Graph::weighted_one_side_sampling(int r_base, int r_exp, int r_round) {
 
     // If the bipartite graph is constructed from a unipartite graph,
     // L is the set of vertices with even indeices
-    for (int v = 0; v < to_bip ? n : lsize; v += ((to_bip) ? 2 : 1)) {
+    for (int v = 0; v < (to_bip ? n : lsize); v += ((to_bip) ? 2 : 1)) {
         int v_deg = query_deg(v);
         if (v_deg) {
             deg_count += v_deg;
@@ -305,7 +305,7 @@ void Graph::weighted_one_side_sampling(int r_base, int r_exp, int r_round) {
     printf("m:%lld\n", m);
 
     // for (int i=0; elapsed_seconds.count() <= 64; i++) {
-    for (int i = 0; i < r_round; i++) {
+    for (int i = 0; i < r_round + 1; i++) {
         int to_run_rounds = (i > 0) ? (r_exp - 1) * round_num : round_num;
         btf_num = (i > 0) ? btf_num / r_exp : btf_num;
         round_num = (i > 0) ? round_num * r_exp : round_num;
