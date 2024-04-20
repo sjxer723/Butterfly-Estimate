@@ -62,6 +62,7 @@ Graph::Graph(string path, config_t c) {
     printf("deg[lsize-1] = %d\n", deg_cnt[lsize - 1]);
     printf("n1 = %d\n", lsize);
     printf("n=%d,m=%lld\n", n, m);
+    to_bip = c.uni_to_bip;
     alpha = 1;
     query_cnt = -1;
     BTF_cnt = -1;
@@ -282,6 +283,67 @@ void Graph::estimate(double s1_coeff, double s2_coeff, int r_base, int r_exp, in
     BTF_cnt = res;
 }
 
+void Graph::weighted_one_side_sampling(int r_base, int r_exp, int r_round) {
+    ll deg_count = 0;
+    ll btf_num = 0;
+    vector<int> deg_pos_vertex_vec;
+    vector<ll> deg_cnt_vec;
+    int round_num_base = r_base, round_num = round_num_base;
+    chrono::duration<double> elapsed_seconds;
+
+    // If the bipartite graph is constructed from a unipartite graph,
+    // L is the set of vertices with even indeices
+    for (int v = 0; v < to_bip ? n : lsize; v += ((to_bip) ? 2 : 1)) {
+        int v_deg = query_deg(v);
+        if (v_deg) {
+            deg_count += v_deg;
+            deg_cnt_vec.emplace_back(deg_count);
+            deg_pos_vertex_vec.emplace_back(v);
+        }
+    }
+    printf("Sum of deg(v):%lld\n", deg_count);
+    printf("m:%lld\n", m);
+
+    // for (int i=0; elapsed_seconds.count() <= 64; i++) {
+    for (int i = 0; i < r_round; i++) {
+        int to_run_rounds = (i > 0) ? (r_exp - 1) * round_num : round_num;
+        btf_num = (i > 0) ? btf_num / r_exp : btf_num;
+        round_num = (i > 0) ? round_num * r_exp : round_num;
+
+#pragma omp parallel for reduction(+ : btf_num)
+        for (int r = 0; r < to_run_rounds; r++) {
+            int seed1 = rand(), seed2 = rand();
+            int u = 0, v = 0;
+            int xi_uv = 0;
+            ll tmp1 = randnum(deg_count, &seed1), tmp2 = randnum(deg_count, &seed2);
+
+            u = deg_pos_vertex_vec[upper_bound(deg_cnt_vec.begin(), deg_cnt_vec.end(), tmp1) -
+                                   deg_cnt_vec.begin()];
+            v = deg_pos_vertex_vec[upper_bound(deg_cnt_vec.begin(), deg_cnt_vec.end(), tmp2) -
+                                   deg_cnt_vec.begin()];
+            if (u == v) {
+                continue;
+            }
+            int u_deg = query_deg(u), v_deg = query_deg(v);
+            if (u_deg > 0 && v_deg > 0) {
+                if (u_deg > v_deg) {
+                    swap(u, v);
+                }
+                for (int w_idx = 0, u_deg = query_deg(u); w_idx < u_deg; w_idx++) {
+                    int w = query_nbr(u, w_idx);
+                    if (query_pair(v, w)) {
+                        xi_uv++;
+                    }
+                }
+                ll xi_uv_choose2 = (ll)xi_uv * ((ll)xi_uv - 1) / 2;
+                ll tmp_btf = (m / (2 * u_deg) * (m / v_deg)) * xi_uv_choose2;
+                btf_num += tmp_btf / round_num;
+            }
+        }
+    }
+    BTF_cnt = btf_num;
+}
+
 void btf_count(config_t c, int method) {
     if (c.n_threads > 0)
         omp_set_num_threads(c.n_threads);
@@ -302,6 +364,10 @@ void btf_count(config_t c, int method) {
         // Run TLS(Two Leveled Sampling) butterfly counting algorithm
         output_filename = append_dir(c.path, "Tls_res.txt");
         g->estimate(c.s1, c.s2, c.r_base, c.r_exp, c.r_round);
+    } else if (method == 3) {
+        // Run WPS(Weighted one-sided Pair Sampling) butterfly counting algorithm
+        output_filename = append_dir(c.path, "Wps_res.txt");
+        g->weighted_one_side_sampling(c.r_base, c.r_exp, c.r_round);
     }
     auto end = chrono::system_clock::now();
     chrono::duration<double> estimate_time = end - start;

@@ -70,6 +70,7 @@ class Graph {
     ll BTF_cnt;
     double BTF_time; // runtime of alg
     ll query_cnt;    // counter for queries
+    bool to_bip;     // indicates whether the graph is constructed from a unipartite graph
     void wedge_cnt();
 
     // Allowed query
@@ -86,7 +87,8 @@ class Graph {
     void rec_count_arb();                                                                // exact
     void btf_count_ESpar(double p);                                                      // espar
     void estimate(double s1_coeff, double s2_coeff, int r_base, int r_exp, int r_round); // tls
-
+    void weighted_one_side_sampling(int r_base, int r_exp,
+                                    int r_round); // weighted one-sided pair sampling
     void save_expr_results(string res_file_name);
 
   public:

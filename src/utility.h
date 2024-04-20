@@ -1,7 +1,11 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
+#include <algorithm>
+#include <climits>
+#include <cstring>
 #include <string>
+#include <vector>
 
 using namespace std;
 

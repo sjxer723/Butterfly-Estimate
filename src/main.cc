@@ -31,6 +31,7 @@ void txt_to_bin(config_t c) {
         if (rand() % 10 >= c.density) {
             continue;
         }
+        // printf("a = %d, b= %d\n", a, b);
         n1 = max(n1, a + 1);
         n2 = max(n2, b + 1);
         if (c.is_bipartite_format)
@@ -177,6 +178,8 @@ int main(int argc, char **argv) {
         btf_count(c, 1);
     } else if (strcmp(c.method.c_str(), "tls") == 0) {
         btf_count(c, 2);
+    } else if (strcmp(c.method.c_str(), "wps") == 0) {
+        btf_count(c, 3);
     } else if (strcmp(c.method.c_str(), "txt2bin") == 0) {
         txt_to_bin(c);
     }

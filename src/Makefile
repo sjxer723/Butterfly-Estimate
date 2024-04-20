@@ -11,7 +11,7 @@ btfc: $(SRC) $(DEPS)
 	$(CC) -std=c++11 $(CPPFLAGS) $(LDFLAGS) -O3 -pthread -o $@ $(SRC)
 	
 format:
-	clang-format -i *.cpp *.h
+	clang-format -i *.cc *.h
 
 clean:
 	rm -rf *.o btfc
