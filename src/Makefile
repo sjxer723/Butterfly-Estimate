@@ -1,7 +1,7 @@
 CC=g++
 LDFLAGS=
-DEPS = 
-SRC = main.cc
+DEPS = btf-count.h utility.h
+SRC = main.cc btf-count.cc
 PLATFORM := $(shell uname)
 CPPFLAGS=-g -fopenmp
 
@@ -11,7 +11,7 @@ btfc: $(SRC) $(DEPS)
 	$(CC) -std=c++11 $(CPPFLAGS) $(LDFLAGS) -O3 -pthread -o $@ $(SRC)
 	
 format:
-	clang-format -i *.cc
+	clang-format -i *.cpp *.h
 
-clean :
+clean:
 	rm -rf *.o btfc
