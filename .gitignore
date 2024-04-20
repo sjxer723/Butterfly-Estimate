@@ -1,0 +1,8 @@
+*/*.o
+*/*.a
+*/*.so
+src/btfc
+src/nbtfc
+dataset/*/*config.txt
+src/__pycache__/
+.vscode/
