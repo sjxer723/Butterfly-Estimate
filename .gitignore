@@ -3,6 +3,8 @@
 */*.so
 src/btfc
 src/nbtfc
-dataset/*/*config.txt
+dataset/*/*res.txt
+dataset/*/README*
+dataset/*/meta.*
 src/__pycache__/
 .vscode/
