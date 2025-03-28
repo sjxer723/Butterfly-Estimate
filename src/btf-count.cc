@@ -232,7 +232,7 @@ ll Graph::btf_count_est(int s1, int s2) {
                 swap(deg_y, deg_z);
             }
             double root_m = sqrt(m_bar * 1.0);
-            int r = ceil(deg_y / root_m);
+            int r = ceil(deg_y / root_m) * 10 > 20 ? ceil(deg_y / root_m) * 10 : 20; // at least 5 samples
             if (deg_y <= root_m) {
                 tmp = randnum(m_bar, &seed);
                 if (tmp > deg_y * root_m)

@@ -29,7 +29,7 @@ typedef struct Config {
     bool is_bipartite_format = true;
     bool uni_to_bip = false;
     int r_base = 50;
-    int r_exp = 1;
+    int r_exp = 2;
     int r_round = 0;
     float s1 = 1;
     float s2 = 1;
